@@ -30,15 +30,6 @@ st.set_page_config(page_title="MetricStory", page_icon="📊", layout="wide")
 st.markdown(
     """
     <style>
-      /* scrollbars mas anchos que los finos de Streamlit */
-      ::-webkit-scrollbar { width: 15px; height: 15px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb {
-        background: #b8c2ce; border-radius: 8px;
-        border: 4px solid transparent; background-clip: content-box;
-      }
-      ::-webkit-scrollbar-thumb:hover { background: #97a3b2; background-clip: content-box; }
-
       /* menos aire arriba del contenido principal */
       .block-container { padding-top: 2.2rem; padding-bottom: 2rem; }
 
