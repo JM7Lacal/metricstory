@@ -59,9 +59,14 @@ st.markdown(
 
       /* sidebar compacto: sacar el espacio muerto del encabezado y juntar controles */
       section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
-        padding-top: 0.4rem; padding-bottom: 0.2rem; min-height: 0;
+        padding-top: 0.35rem; padding-bottom: 0.15rem; min-height: 0;
       }
       section[data-testid="stSidebar"] [data-testid="stLogoSpacer"] { display: none; }
+      /* la flecha de colapsar: siempre visible (Streamlit la muestra solo al
+         pasar el mouse, y ese aparecer/desaparecer movia los controles) */
+      section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {
+        display: block !important;
+      }
       section[data-testid="stSidebar"] .block-container { padding-top: 0.5rem; }
       section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0.5rem; }
       section[data-testid="stSidebar"] h2 { font-size: 1.05rem; margin: 0.4rem 0 0; }
