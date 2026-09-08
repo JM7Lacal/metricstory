@@ -27,10 +27,10 @@ SAMPLE_PATH = Path(__file__).parent / "samples" / "meta-ads-sample.csv"
 
 st.set_page_config(page_title="MetricStory", page_icon="📊", layout="wide")
 
-# Streamlit deja los scrollbars finos por defecto y cuestan de agarrar.
 st.markdown(
     """
     <style>
+      /* scrollbars mas anchos que los finos de Streamlit */
       ::-webkit-scrollbar { width: 15px; height: 15px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb {
@@ -38,6 +38,14 @@ st.markdown(
         border: 4px solid transparent; background-clip: content-box;
       }
       ::-webkit-scrollbar-thumb:hover { background: #97a3b2; background-clip: content-box; }
+
+      /* menos aire arriba del contenido principal */
+      .block-container { padding-top: 2.2rem; padding-bottom: 2rem; }
+
+      /* sidebar compacto: menos gap entre controles, titulos y padding mas chicos */
+      section[data-testid="stSidebar"] .block-container { padding-top: 1.6rem; }
+      section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0.5rem; }
+      section[data-testid="stSidebar"] h2 { font-size: 1.05rem; margin: 0.4rem 0 0; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -68,9 +76,9 @@ def main() -> None:
 
     with st.sidebar:
         st.header("Datos")
-        uploaded = st.file_uploader("Export de la plataforma de ads (CSV)", type=["csv"])
+        uploaded = st.file_uploader("CSV de la plataforma de ads", type=["csv"])
         if uploaded is None:
-            if st.button("📎 Probar con datos de ejemplo (Meta Ads)"):
+            if st.button("📎 Usar datos de ejemplo (Meta Ads)"):
                 st.session_state["use_sample"] = True
         else:
             st.session_state["use_sample"] = False
@@ -78,10 +86,11 @@ def main() -> None:
 
         if uploaded is not None or use_sample:
             st.header("Cuenta")
-            currency = st.text_input("Moneda", value=cfg.account_currency)
-            budget = st.number_input(
-                "Presupuesto mensual (0 = no mostrar ritmo de gasto)",
-                min_value=0.0, value=float(cfg.monthly_budget or 0), step=500.0,
+            c1, c2 = st.columns([1, 1.6])
+            currency = c1.text_input("Moneda", value=cfg.account_currency)
+            budget = c2.number_input(
+                "Presupuesto/mes", min_value=0.0, value=float(cfg.monthly_budget or 0),
+                step=500.0, help="0 = no mostrar el ritmo de gasto",
             )
 
             st.header("Informe")
