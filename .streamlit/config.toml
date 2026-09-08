@@ -1,0 +1,14 @@
+# Tema de la app. Config propia del programa: ver config.toml en la raiz.
+[theme]
+primaryColor = "#3D6C9E"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#EEF2F6"
+textColor = "#16202E"
+font = "sans serif"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+# Saca el boton "Deploy" y reduce el menu de la barra de herramientas.
+toolbarMode = "minimal"

@@ -1,0 +1,27 @@
+# Selecciona el proveedor de IA que redacta el informe. Cambiar esta linea
+# alcanza — no hace falta tocar codigo. Ver metricstory/llm/ para agregar uno.
+provider = "stub"
+
+[providers.stub]
+# sin configuracion
+
+[providers.anthropic]
+model = "claude-sonnet-5"
+api_key_env = "ANTHROPIC_API_KEY"
+
+[providers.openai]
+model = "gpt-4o-mini"
+api_key_env = "OPENAI_API_KEY"
+
+[providers.ollama]
+model = "llama3.1"
+host = "http://localhost:11434"
+
+[providers.claude-cli]
+# sin configuracion; usa el CLI `claude` ya logueado
+
+[report]
+account_currency = "USD"
+monthly_budget = 18000
+default_tone = "cliente"
+temperature = 0.4

@@ -1,0 +1,4 @@
+# Normaliza finales de linea: LF en el repo, sin importar el SO del que clona.
+* text=auto eol=lf
+*.png binary
+*.csv text eol=lf
