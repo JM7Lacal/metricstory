@@ -27,6 +27,22 @@ SAMPLE_PATH = Path(__file__).parent / "samples" / "meta-ads-sample.csv"
 
 st.set_page_config(page_title="MetricStory", page_icon="📊", layout="wide")
 
+# Streamlit deja los scrollbars finos por defecto y cuestan de agarrar.
+st.markdown(
+    """
+    <style>
+      ::-webkit-scrollbar { width: 15px; height: 15px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb {
+        background: #b8c2ce; border-radius: 8px;
+        border: 4px solid transparent; background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover { background: #97a3b2; background-clip: content-box; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 @st.cache_resource
 def _config() -> AppConfig:
@@ -134,10 +150,9 @@ def main() -> None:
 
 
 def _render_report_tab(facts: ReportFacts, cfg: AppConfig, *, tone: str, provider: str) -> None:
-    st.info(
-        "La IA solo ve los números ya calculados de «Datos y métricas», nunca el CSV "
-        "crudo. No puede inventar una cifra que no esté en esos hechos.",
-        icon="🔒",
+    st.caption(
+        "Redactado a partir de las métricas de la pestaña anterior. "
+        "Revisá el informe antes de enviarlo al cliente."
     )
 
     if st.button("✍️ Generar informe", type="primary"):
@@ -209,8 +224,7 @@ def _render_chat_tab(facts: ReportFacts, cfg: AppConfig, *, tone: str, provider:
         return
 
     st.caption(
-        "Preguntá sobre los números del período. La IA responde con los hechos ya "
-        "calculados — no vuelve a calcular ni inventa cifras. No modifica el informe."
+        "Preguntá sobre los números del período. Las respuestas no modifican el informe."
     )
 
     st.session_state.setdefault("conversation", [])
