@@ -33,6 +33,14 @@ st.markdown(
       /* menos aire arriba del contenido principal */
       .block-container { padding-top: 2.2rem; padding-bottom: 2rem; }
 
+      /* file uploader compacto: solo el boton, sin el bloque de instrucciones */
+      section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
+        padding: 0.5rem 0.75rem;
+      }
+      section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] {
+        display: none;
+      }
+
       /* sidebar compacto: sacar el espacio muerto del encabezado y juntar controles */
       section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
         padding-top: 0.4rem; padding-bottom: 0.2rem; min-height: 0;
@@ -78,7 +86,10 @@ def main() -> None:
                 st.rerun()
             uploaded = None
         else:
-            uploaded = st.file_uploader("CSV de la plataforma de ads", type=["csv"])
+            st.caption("Subí el export de tu plataforma de ads (CSV)")
+            uploaded = st.file_uploader(
+                "CSV de la plataforma de ads", type=["csv"], label_visibility="collapsed"
+            )
             if uploaded is None and st.button("📎 Usar datos de ejemplo (Meta Ads)"):
                 st.session_state["use_sample"] = True
                 st.rerun()
