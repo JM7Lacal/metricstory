@@ -30,6 +30,22 @@ st.set_page_config(page_title="MetricStory", page_icon="📊", layout="wide")
 st.markdown(
     """
     <style>
+      /* scrollbars mas anchos que los finos de Streamlit */
+      ::-webkit-scrollbar { width: 14px; height: 14px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb {
+        background: #b8c2ce; border-radius: 7px;
+        border: 3px solid transparent; background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover { background: #97a3b2; background-clip: content-box; }
+
+      /* reservar siempre el gutter: el contenido no se corre cuando la barra
+         aparece o desaparece */
+      [data-testid="stMain"], [data-testid="stAppViewContainer"],
+      section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div {
+        scrollbar-gutter: stable;
+      }
+
       /* menos aire arriba del contenido principal */
       .block-container { padding-top: 2.2rem; padding-bottom: 2rem; }
 
