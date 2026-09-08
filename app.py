@@ -42,8 +42,12 @@ st.markdown(
       /* menos aire arriba del contenido principal */
       .block-container { padding-top: 2.2rem; padding-bottom: 2rem; }
 
-      /* sidebar compacto: menos gap entre controles, titulos y padding mas chicos */
-      section[data-testid="stSidebar"] .block-container { padding-top: 1.6rem; }
+      /* sidebar compacto: sacar el espacio muerto del encabezado y juntar controles */
+      section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
+        padding-top: 0.4rem; padding-bottom: 0.2rem; min-height: 0;
+      }
+      section[data-testid="stSidebar"] [data-testid="stLogoSpacer"] { display: none; }
+      section[data-testid="stSidebar"] .block-container { padding-top: 0.5rem; }
       section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0.5rem; }
       section[data-testid="stSidebar"] h2 { font-size: 1.05rem; margin: 0.4rem 0 0; }
     </style>
@@ -76,13 +80,18 @@ def main() -> None:
 
     with st.sidebar:
         st.header("Datos")
-        uploaded = st.file_uploader("CSV de la plataforma de ads", type=["csv"])
-        if uploaded is None:
-            if st.button("📎 Usar datos de ejemplo (Meta Ads)"):
-                st.session_state["use_sample"] = True
+        if st.session_state.get("use_sample"):
+            st.caption("📄 Usando datos de ejemplo (Meta Ads)")
+            if st.button("Subir otro archivo"):
+                st.session_state["use_sample"] = False
+                st.rerun()
+            uploaded = None
         else:
-            st.session_state["use_sample"] = False
-        use_sample = uploaded is None and st.session_state.get("use_sample", False)
+            uploaded = st.file_uploader("CSV de la plataforma de ads", type=["csv"])
+            if uploaded is None and st.button("📎 Usar datos de ejemplo (Meta Ads)"):
+                st.session_state["use_sample"] = True
+                st.rerun()
+        use_sample = st.session_state.get("use_sample", False) and uploaded is None
 
         if uploaded is not None or use_sample:
             st.header("Cuenta")
