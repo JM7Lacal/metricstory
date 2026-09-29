@@ -1,69 +1,70 @@
 # MetricStory
 
-De las métricas de campaña al informe que le mandás al cliente.
+From campaign metrics to the report you send the client.
 
-## El problema
+## The problem
 
-Cada fin de mes, en una agencia de marketing digital, alguien tiene que
-convertir el export de métricas de Meta Ads (o Google Ads) en un informe
-que un cliente no técnico entienda: qué pasó, por qué importa, qué se
-recomienda para el próximo período. Es una tarea repetitiva que igual
-requiere criterio — la combinación perfecta para IA bien aplicada.
+Every month, at a digital marketing agency, someone has to turn the metrics
+export from Meta Ads (or Google Ads) into a report a non-technical client
+can understand: what happened, why it matters, what we recommend for the
+next period. It's a repetitive task that still requires judgment — the
+perfect fit for well-applied AI.
 
-## Cómo funciona
+## How it works
 
 ```
-CSV de la plataforma de ads
+Ad platform CSV
         │
         ▼
- mapeo tolerante de columnas    (columns.py — soporta headers en
-        │                        inglés/español, distintas plataformas)
+ tolerant column mapping        (columns.py — handles English/Spanish
+        │                        headers, different platforms)
         ▼
- capa determinística            (metrics.py — CTR, CPC, CPA, ROAS,
-        │                        comparación vs. período anterior,
-        │                        ritmo de presupuesto. 100% testeado,
-        │                        cero IA acá)
+ deterministic layer            (metrics.py — CTR, CPC, CPA, ROAS,
+        │                        comparison vs. previous period,
+        │                        budget pacing. 100% tested,
+        │                        zero AI here)
         ▼
- hechos estructurados (JSON)    (facts.py)
+ structured facts (JSON)        (facts.py)
         │
         ▼
- redacción con IA               (report.py + llm/ — el modelo recibe
-        │                        SOLO el JSON de hechos, nunca el CSV
-        │                        crudo. No puede inventar una cifra
-        │                        que no esté ahí)
+ AI-written narrative           (report.py + llm/ — the model receives
+        │                        ONLY the facts JSON, never the raw
+        │                        CSV. It can't invent a number that
+        │                        isn't there)
         ▼
- informe en Markdown → export a .md / .html imprimible
+ Markdown report → export to .md / printable .html
 ```
 
-`app.py` (UI) nunca llama a `report.py` ni a `llm/` directamente: pasa por
-`service.py`, la capa de aplicación. Así el mismo flujo se reusa desde una
-CLI o una API sin tocar la UI, y `service.py` es testeable sin Streamlit.
+`app.py` (UI) never calls `report.py` or `llm/` directly: it goes through
+`service.py`, the application layer. That way the same flow can be reused
+from a CLI or an API without touching the UI, and `service.py` is testable
+without Streamlit.
 
-**Regla de diseño central:** la IA nunca calcula un número, solo narra
-sobre números ya calculados y validados por código determinístico. Esto
-evita que alucine cifras — el riesgo más obvio de este tipo de herramienta.
+**Core design rule:** the AI never calculates a number; it only narrates
+numbers already computed and validated by deterministic code. This keeps
+it from hallucinating figures — the most obvious risk of this kind of tool.
 
-## Proveedores de IA intercambiables
+## Swappable AI providers
 
-Mismo patrón que usé en otro proyecto (Foundry, un editor WPF): el resto
-del programa depende solo del puerto `ChatModel` (`llm/base.py`), no de
-un proveedor concreto. Cambiar de proveedor es una línea en
-`config.toml`, sin tocar código:
+Same pattern I used in another project (Foundry, a WPF editor): the rest
+of the program depends only on the `ChatModel` port (`llm/base.py`), not
+on a concrete provider. Switching providers is one line in `config.toml`,
+no code changes:
 
-| Proveedor | Uso |
+| Provider | Use |
 |---|---|
-| `stub` | Sin red, sin API key. Para demos offline y para los tests (salida determinística). |
-| `anthropic` | Anthropic Messages API directa. |
-| `openai` | OpenAI (o cualquier endpoint compatible: Azure, Groq, OpenRouter...). |
-| `ollama` | Modelo local — útil si el CSV del cliente es sensible y no puede salir de la máquina. |
-| `claude-cli` | Usa el CLI de Claude Code (`claude -p`) ya logueado, sin API key aparte. |
+| `stub` | No network, no API key. For offline demos and tests (deterministic output). |
+| `anthropic` | Anthropic Messages API directly. |
+| `openai` | OpenAI (or any compatible endpoint: Azure, Groq, OpenRouter...). |
+| `ollama` | Local model — useful when the client's CSV is sensitive and can't leave the machine. |
+| `claude-cli` | Uses the already-logged-in Claude Code CLI (`claude -p`), no separate API key. |
 
-Agregar un proveedor nuevo: un archivo en `metricstory/llm/`, registrarlo
-en `factory.py`. Nada más se entera.
+Adding a new provider: one file in `metricstory/llm/`, register it in
+`factory.py`. Nothing else needs to know.
 
-## Correr localmente
+## Running locally
 
-Requiere Python 3.11+ (se desarrolló con 3.12).
+Requires Python 3.11+ (developed with 3.12).
 
 ```bash
 python -m venv .venv
@@ -71,24 +72,27 @@ python -m venv .venv
 .venv/Scripts/python -m streamlit run app.py
 ```
 
-Por defecto usa el CSV sintético de `samples/meta-ads-sample.csv` (schema
-real de Meta Ads Manager, 6 campañas × 60 días, con una historia armada
-a propósito: una campaña estacional que explota, otra que se deteriora,
-una que hay que pausar).
+By default it uses the synthetic CSV in `samples/meta-ads-sample.csv`
+(real Meta Ads Manager schema, 6 campaigns × 60 days, with a deliberate
+storyline: a seasonal campaign that takes off, another that deteriorates,
+one that should be paused).
 
-## Configuración (`config.toml`)
+The UI and the generated reports are in Spanish (the target audience is
+Spanish-speaking agencies).
+
+## Configuration (`config.toml`)
 
 ```toml
-provider = "claude-cli"          # una palabra, sin recompilar
+provider = "claude-cli"          # one word, no rebuild
 
 [report]
 account_currency = "USD"
 monthly_budget = 18000
-default_tone = "cliente"         # cliente | interno | ejecutivo
+default_tone = "cliente"         # cliente (client) | interno (internal) | ejecutivo (executive)
 ```
 
-`ANTHROPIC_API_KEY` / `OPENAI_API_KEY` van como variable de entorno, no
-en el archivo.
+`ANTHROPIC_API_KEY` / `OPENAI_API_KEY` go in environment variables, not
+in the file.
 
 ## Tests
 
@@ -96,18 +100,18 @@ en el archivo.
 .venv/Scripts/python -m pytest
 ```
 
-Cubren: mapeo de columnas (headers en inglés/español), parseo de números
-y fechas en formatos regionales, cálculo de métricas y deltas entre
-períodos, ritmo de presupuesto, que el prompt le pasa al modelo únicamente
-el JSON de hechos (nunca prosa con datos sin validar), la capa de servicio
-(selección de proveedor y su config), el parseo de respuesta de cada
-adapter de IA (con la red mockeada) y el export a Markdown/HTML.
+They cover: column mapping (English/Spanish headers), parsing numbers and
+dates in regional formats, metric calculation and period-over-period
+deltas, budget pacing, that the prompt passes the model only the facts
+JSON (never prose with unvalidated data), the service layer (provider
+selection and its config), response parsing for each AI adapter (with
+the network mocked) and the Markdown/HTML export.
 
-## Qué haría después
+## What I'd do next
 
-- Mapeo de columnas persistente por plantilla de plataforma (Meta / Google
-  Ads / GA4), para no reconfigurar cada mes.
-- Comparación de más de 2 períodos (tendencia, no solo delta).
-- Voz de marca por cliente (glosario, tono, disclaimers) guardada aparte
-  del prompt genérico.
-- Caché de informes generados + historial por cliente.
+- Persistent column mapping per platform template (Meta / Google Ads /
+  GA4), so it doesn't need reconfiguring every month.
+- Comparing more than 2 periods (trend, not just delta).
+- Per-client brand voice (glossary, tone, disclaimers) stored separately
+  from the generic prompt.
+- Cache of generated reports + per-client history.
